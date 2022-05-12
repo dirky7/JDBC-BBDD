@@ -111,15 +111,7 @@ public class GestionClientes {
 
         int id = pideInt("Indica el id del cliente a modificar: ");
 
-        // Comprobamos si existe el cliente
-        if (!DBManager.existsCliente(id)) {
-            System.out.println("El cliente " + id + " no existe.");
-            return;
-        }
-
-        // Mostramos datos del cliente a modificar
-        DBManager.printCliente(id);
-
+        
         // Solicitamos los nuevos datos
         String nombre = pideLinea("Nuevo nombre: ");
         String direccion = pideLinea("Nueva dirección: ");
@@ -139,11 +131,7 @@ public class GestionClientes {
 
         int id = pideInt("Indica el id del cliente a eliminar: ");
 
-        // Comprobamos si existe el cliente
-        if (!DBManager.existsCliente(id)) {
-            System.out.println("El cliente " + id + " no existe.");
-            return;
-        }
+        
 
         // Eliminamos el cliente
         boolean res = DBManager.deleteCliente(id);
