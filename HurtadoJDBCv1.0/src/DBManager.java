@@ -274,15 +274,9 @@ public class DBManager {
             insert.setString(1, nombre);
             insert.setString(2, direccion);
             
-            ResultSet rs = insert.executeQuery();
+            int rs = insert.executeUpdate();
 
-            // Insertamos el nuevo registro
-            rs.moveToInsertRow();
-            rs.updateString(DB_CLI_NOM, nombre);
-            rs.updateString(DB_CLI_DIR, direccion);
-            rs.insertRow();
-            // Todo bien, cerramos ResultSet y devolvemos true
-            rs.close();
+            
             System.out.println("OK!");
             return true;
 
@@ -304,26 +298,22 @@ public class DBManager {
         try {
             // Obtenemos el cliente
             System.out.print("Actualizando cliente " + id + "... ");
-            ResultSet rs = getCliente(id);
+            
+            
+            String sql = "update " + DB_CLI + " SET nombre = ?, direccion = ? where id = ?;";
+            
+            PreparedStatement insert = conn.prepareStatement(sql);
+            
+            insert.setString(1, nuevoNombre);
+            insert.setString(2, nuevaDireccion);
+            insert.setInt(3, id);
+            
+            int rs = insert.executeUpdate();
 
-            // Si no existe el Resultset
-            if (rs == null) {
-                System.out.println("Error. ResultSet null.");
-                return false;
-            }
-
-            // Si tiene un primer registro, lo eliminamos
-            if (rs.first()) {
-                rs.updateString(DB_CLI_NOM, nuevoNombre);
-                rs.updateString(DB_CLI_DIR, nuevaDireccion);
-                rs.updateRow();
-                rs.close();
-                System.out.println("OK!");
-                return true;
-            } else {
-                System.out.println("ERROR. ResultSet vacío.");
-                return false;
-            }
+            
+            System.out.println("OK!");
+            return true;
+           
         } catch (SQLException ex) {
             ex.printStackTrace();
             return false;
@@ -339,26 +329,19 @@ public class DBManager {
     public static boolean deleteCliente(int id) {
         try {
             System.out.print("Eliminando cliente " + id + "... ");
-
-            // Obtenemos el cliente
-            ResultSet rs = getCliente(id);
-
-            // Si no existe el Resultset
-            if (rs == null) {
-                System.out.println("ERROR. ResultSet null.");
-                return false;
-            }
-
-            // Si existe y tiene primer registro, lo eliminamos
-            if (rs.first()) {
-                rs.deleteRow();
-                rs.close();
-                System.out.println("OK!");
-                return true;
-            } else {
-                System.out.println("ERROR. ResultSet vacío.");
-                return false;
-            }
+            
+            
+            String sql = "delete from " + DB_CLI + " where id = ? ;";
+            
+            PreparedStatement insert = conn.prepareStatement(sql);
+            
+            insert.setInt(1, id);
+            
+            int rs = insert.executeUpdate();
+            
+            System.out.println("OK!");
+            
+            return true;
 
         } catch (SQLException ex) {
             ex.printStackTrace();
