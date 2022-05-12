@@ -1,5 +1,6 @@
 
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -172,10 +173,12 @@ public class DBManager {
     public static ResultSet getCliente(int id) {
         try {
             // Realizamos la consulta SQL
-            Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        	
             String sql = DB_CLI_SELECT + " WHERE " + DB_CLI_ID + "='" + id + "';";
+            
+            PreparedStatement stmt = conn.prepareStatement(sql);
             //System.out.println(sql);
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery();
             //stmt.close();
             
             // Si no hay primer registro entonces no existe el cliente
@@ -261,14 +264,23 @@ public class DBManager {
         try {
             // Obtenemos la tabla clientes
             System.out.print("Insertando cliente " + nombre + "...");
-            ResultSet rs = getTablaClientes(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+            
+            
+            //quizas no funciona insert(?)
+            String sql = "insert into " + DB_CLI + " (nombre , direccion) values (?,?);";
+            
+            PreparedStatement insert = conn.prepareStatement(sql);
+            
+            insert.setString(1, nombre);
+            insert.setString(2, direccion);
+            
+            ResultSet rs = insert.executeQuery();
 
             // Insertamos el nuevo registro
             rs.moveToInsertRow();
             rs.updateString(DB_CLI_NOM, nombre);
             rs.updateString(DB_CLI_DIR, direccion);
             rs.insertRow();
-
             // Todo bien, cerramos ResultSet y devolvemos true
             rs.close();
             System.out.println("OK!");
