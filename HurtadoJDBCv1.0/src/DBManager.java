@@ -16,7 +16,7 @@ public class DBManager {
     private static Connection conn = null;
 
     // Configuración de la conexión a la base de datos
-    private static final String DB_HOST = "172.16.1.190";
+    private static final String DB_HOST = "172.16.1.97";
     private static final String DB_PORT = "3306";
     private static final String DB_NAME = "tienda";
     private static final String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?serverTimezone=UTC";
