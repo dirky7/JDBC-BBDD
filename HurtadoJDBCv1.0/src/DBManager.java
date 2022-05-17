@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 
 /**
  *
- * @author lionel
+ * @author Daniel Hurtado Perera
  */
 public class DBManager {
 

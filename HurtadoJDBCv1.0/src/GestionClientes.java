@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 /**
  *
- * @author lionel
+ * @author Daniel Hurtado Perera
  */
 public class GestionClientes {
 
