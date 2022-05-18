@@ -1,5 +1,5 @@
 
-import java.util.Scanner;
+import java.util.*;
 import java.io.*;
 
 /**
@@ -40,7 +40,7 @@ public class GestionClientes {
         System.out.println("3. Mostrar contenido de una tabla");
         
         System.out.println("4. Crear tabla");
-        System.out.println("5. Modificar tabla");
+        System.out.println("5. Modificar el tipo de dato de una tabla");
         System.out.println("6. Borrar tabla");
         System.out.println("7. Añadir columna en una tabla");
         
@@ -78,7 +78,10 @@ public class GestionClientes {
             	opcionAnadirColumna();
             	return false;
             case 8:
-            	
+            	opcionVolcarDatos();
+            	return false;
+            case 9:
+            	opcionImportarDatos();
             	return false;
             default:
                 System.out.println("Opción elegida incorrecta");
@@ -128,7 +131,7 @@ public class GestionClientes {
     	
     	String nombreTabla = in.nextLine();
     	
-    	DBManager.printSelect(nombreTabla);
+    	System.out.println(DBManager.printSelect(nombreTabla));
         
     }
     
@@ -153,7 +156,8 @@ public class GestionClientes {
     	String nombreTabla = in.nextLine();
     	
     	
-    	DBManager.printContenidoTabla(nombreTabla);
+    	System.out.println(DBManager.printContenidoTabla(nombreTabla));
+    	
     	System.out.println("¿Cual va a ser la columna que quiere modificar?");
     	String nombreColumna = in.nextLine();
     	DBManager.modificarTabla(nombreTabla, nombreColumna);
@@ -206,6 +210,80 @@ public class GestionClientes {
     }
     
     
+    public static void opcionVolcarDatos()
+    {
+    	DBManager.printTablas();
+    	
+    	Scanner in = new Scanner(System.in);
+    	System.out.println("\n¿De que tabla quieres volcar los datos?");
+    	String nombreTabla = in.nextLine();
+    	
+    	System.out.println("¿Nombre del fichero resultante?");
+    	String fichero = in.nextLine();
+    	
+    	File resultadoDatos = new File(fichero);
+    	
+    	try {
+			FileWriter escritor = new FileWriter(resultadoDatos.getAbsolutePath());
+			
+			escritor.write(DBManager.cabeceraFichero(nombreTabla));
+			
+			escritor.write(DBManager.printSelect(nombreTabla));
+			
+			escritor.close();
+		}
+    	catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
     
+    public static void opcionImportarDatos()
+    {
+    	Scanner in = new Scanner(System.in);
+    	ArrayList<String> sentencias = new ArrayList<String>();
+    	String fichero, baseDatos, tabla, columnas, valores;
+    	
+    	System.out.println("¿Cual es el fichero que quiere importar?");
+    	fichero = in.nextLine();
+    	
+    	File importacion = new File(fichero);
+    	
+    	try
+    	{
+    		Scanner lector = new Scanner(fichero);
+    		
+    		do
+    		{
+    			sentencias.add(lector.nextLine());
+    		}
+    		while(lector.hasNext());
+    		
+    		lector.close();
+    		
+    		for(int contador = 3; contador < sentencias.size(); contador++)
+    		{
+    			String[] valorCampo;
+    			
+    			baseDatos = sentencias.get(0);
+    			tabla = sentencias.get(1);
+    			columnas = sentencias.get(2);
+    			
+    			valores = sentencias.get(contador);
+    			
+    			valorCampo = valores.split(",");
+    			
+    			
+    			DBManager.importarInsert(baseDatos, tabla, columnas, valores);
+    			
+    		}
+    		
+    	}
+    	catch(Exception ex)
+    	{
+    		ex.printStackTrace();
+    	}
+    }
     
 }
