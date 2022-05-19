@@ -506,16 +506,12 @@ public class DBManager {
 	
 	public static void importarInsert(String nombreBaseDatos, String nombreTabla, String columnas, String valores)
 	{
-		consulta = "INSERT INTO ?.? (?) VALUES (?);";
+		consulta = "INSERT INTO "+nombreBaseDatos+"."+nombreTabla+" ("+columnas+") VALUES ("+valores+");";
 		
 		try
 		{
 			PreparedStatement insert = conn.prepareStatement(consulta);
 			
-			insert.setString(1, nombreBaseDatos);
-			insert.setString(2, nombreTabla);
-			insert.setString(3, columnas);
-			insert.setString(4, valores);
 			
 			
 			int rs = insert.executeUpdate();

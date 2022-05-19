@@ -252,7 +252,7 @@ public class GestionClientes {
     	
     	try
     	{
-    		Scanner lector = new Scanner(fichero);
+    		Scanner lector = new Scanner(importacion);
     		
     		do
     		{
@@ -265,6 +265,7 @@ public class GestionClientes {
     		for(int contador = 3; contador < sentencias.size(); contador++)
     		{
     			String[] valorCampo;
+    			String valoresArreglado = "";
     			
     			baseDatos = sentencias.get(0);
     			tabla = sentencias.get(1);
@@ -272,10 +273,30 @@ public class GestionClientes {
     			
     			valores = sentencias.get(contador);
     			
+    			
     			valorCampo = valores.split(",");
     			
     			
-    			DBManager.importarInsert(baseDatos, tabla, columnas, valores);
+    			
+    			for(int contador2 = 0; contador2 < valorCampo.length; contador2++)
+    			{
+    				
+    				if(contador2 == valorCampo.length-1)
+    				{
+    					valoresArreglado += "'"+valorCampo[contador2]+"'";
+    				}
+    				else
+    				{
+    					valoresArreglado += "'"+valorCampo[contador2]+"',";
+    				}
+    				
+    				
+    			}
+    			
+    			
+    			//System.out.println("insert into "+baseDatos+"."+tabla+" ("+columnas+") VALUES ("+valoresArreglado+")");
+    			
+    			DBManager.importarInsert(baseDatos, tabla, columnas, valoresArreglado);
     			
     		}
     		
