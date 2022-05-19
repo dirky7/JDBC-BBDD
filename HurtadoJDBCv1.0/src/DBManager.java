@@ -184,9 +184,11 @@ public class DBManager {
     }
     
     
-    public static void printContenidoTabla(String tabla)
+    public static String printContenidoTabla(String tabla)
     {
     	consulta = "show columns from " + tabla;
+    	
+    	String resultado = "";
     	
     	try
     	{
@@ -200,15 +202,20 @@ public class DBManager {
     		{
     			String nombreTabla = rs.getString("Field");
     			
-    			System.out.print(nombreTabla + "\t");
+    			resultado += nombreTabla + "\t\t";
     		}
+    		
+    		resultado += "\n";
+    		
     	}
+    	
     	catch(SQLException ex)
     	{
     		ex.printStackTrace();
     	}
     	
-    	System.out.println();
+		return resultado;
+    	
     }
     
     public static void printTipoDatosTabla(String tabla)
@@ -227,7 +234,7 @@ public class DBManager {
     		{
     			String nombreTabla = rs.getString("Field");
     			String tipoDato = rs.getString("Type");
-    			System.out.println(nombreTabla + "\t" + tipoDato);
+    			System.out.println(nombreTabla + "\t\t" + tipoDato);
     		}
     	}
     	catch(SQLException ex)
@@ -264,10 +271,11 @@ public class DBManager {
     	}
     }
     
-    public static void printSelect(String tabla)
+    public static String printSelect(String tabla)
     {
     	
-    	printContenidoTabla(tabla);
+    	String resultado;
+    	resultado = (printContenidoTabla(tabla));
     	
     	obtenerTabla(tabla);
     	
@@ -286,9 +294,9 @@ public class DBManager {
     			for(int contador = 0; contador < columnasTabla.size(); contador++)
     			{
     				String tupla = (rs.getString(columnasTabla.get(contador))+"");
-    				System.out.print(tupla+"\t");
+    				resultado += tupla+"\t\t";
     			}
-    			System.out.println();
+    			resultado += "\n";
     		}
     		
     	}
@@ -296,6 +304,9 @@ public class DBManager {
     	{
     		ex.printStackTrace();
     	}
+    	
+    	
+    	return resultado;
     }
     
     
@@ -477,6 +488,38 @@ public class DBManager {
 		}
 		catch(Exception ex)
 		{
+			ex.printStackTrace();
+		}
+	}
+	
+	
+	public static String cabeceraFichero(String nombreTabla)
+	{
+		String resultado;
+		
+		resultado = "Base de datos: "+DB_NAME+"\n";
+		resultado += "Tabla: "+nombreTabla+"\n";
+		
+		return resultado;
+		
+	}
+	
+	public static void importarInsert(String nombreBaseDatos, String nombreTabla, String columnas, String valores)
+	{
+		consulta = "INSERT INTO "+nombreBaseDatos+"."+nombreTabla+" ("+columnas+") VALUES ("+valores+");";
+		
+		try
+		{
+			PreparedStatement insert = conn.prepareStatement(consulta);
+			
+			
+			
+			int rs = insert.executeUpdate();
+			
+			
+		}
+		catch(SQLException ex)
+		{	
 			ex.printStackTrace();
 		}
 	}
