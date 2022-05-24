@@ -6,6 +6,7 @@ import java.io.*;
  *
  * @author Daniel Hurtado Perera
  */
+
 public class GestionClientes {
 
     public static void main(String[] args) {
@@ -13,13 +14,11 @@ public class GestionClientes {
     	
     	DBManager.connectServidor();
     	
-    	DBManager.mostrarBasesDeDatos();
+    	opcionCambiarBaseDatos();
     	
-    	System.out.println("\n¿Cual es la base de datos a la que quieres conectarte?");
-    	String bbdd = ent.nextLine();
     	
         DBManager.loadDriver();
-        DBManager.connect(bbdd);
+        
 
         boolean salir = false;
         do {
@@ -48,6 +47,9 @@ public class GestionClientes {
         System.out.println("9. Importar archivo para insertar");
         System.out.println("10. Importar archivo para actualziar");
         System.out.println("11. Importar archivo para borrar");
+        System.out.println("12. Ver procedimientos disponibles");
+        
+        System.out.println("20. Cambiar de base de datos");
         
         Scanner in = new Scanner(System.in);
             
@@ -81,7 +83,19 @@ public class GestionClientes {
             	opcionVolcarDatos();
             	return false;
             case 9:
-            	opcionImportarDatos();
+            	opcionImportarInsertar();
+            	return false;
+            case 10:
+            	opcionImportarActualizar();
+            	return false;
+            case 11:
+            	opcionImportarBorrar();
+            	return false;
+            case 12:
+            	verProc();
+            	return false;
+            case 20:
+            	opcionCambiarBaseDatos();
             	return false;
             default:
                 System.out.println("Opción elegida incorrecta");
@@ -105,6 +119,19 @@ public class GestionClientes {
         }
     }
 
+    public static void opcionCambiarBaseDatos()
+    {
+    	Scanner ent = new Scanner(System.in);
+    	
+    	DBManager.mostrarBasesDeDatos();
+    	
+    	System.out.println("\n¿Cual es la base de datos a la que quieres conectarte?");
+    	String bbdd = ent.nextLine();
+    	
+    	DBManager.connect(bbdd);
+    }
+    
+    
     public static void opcionMostrarTablas() {
         System.out.println("Listado de tablas:");
         DBManager.printTablas();
@@ -239,13 +266,13 @@ public class GestionClientes {
     	
     }
     
-    public static void opcionImportarDatos()
+    public static void opcionImportarInsertar()
     {
     	Scanner in = new Scanner(System.in);
     	ArrayList<String> sentencias = new ArrayList<String>();
     	String fichero, baseDatos, tabla, columnas, valores;
     	
-    	System.out.println("¿Cual es el fichero que quiere importar?");
+    	System.out.println("¿Cual es el fichero que quiere importar para insertar?");
     	fichero = in.nextLine();
     	
     	File importacion = new File(fichero);
@@ -277,6 +304,70 @@ public class GestionClientes {
     			valorCampo = valores.split(",");
     			
     			
+    			for(int contador2 = 0; contador2 < valorCampo.length; contador2++)
+    			{
+    				
+    				if(contador2 == valorCampo.length-1)
+    				{
+    					valoresArreglado += "'"+valorCampo[contador2]+"'";
+    				}
+    				else
+    				{
+    					valoresArreglado += "'"+valorCampo[contador2]+"',";
+    				}
+    				
+    				
+    			}
+    			
+    			DBManager.importarInsert(baseDatos, tabla, columnas, valoresArreglado);
+    			
+    		}
+    		
+    	}
+    	catch(Exception ex)
+    	{
+    		ex.printStackTrace();
+    	}
+    }
+
+    
+    public static void opcionImportarActualizar()
+    {
+    	Scanner in = new Scanner(System.in);
+    	ArrayList<String> sentencias = new ArrayList<String>();
+    	String fichero, baseDatos, tabla, columnas, valores;
+    	
+    	System.out.println("¿Cual es el fichero que quiere importar para actualizar?");
+    	fichero = in.nextLine();
+    	
+    	File importacion = new File(fichero);
+    	
+    	try
+    	{
+    		Scanner lector = new Scanner(importacion);
+    		
+    		do
+    		{
+    			sentencias.add(lector.nextLine());
+    		}
+    		while(lector.hasNext());
+    		
+    		lector.close();
+    		
+    		for(int contador = 3; contador < sentencias.size(); contador++)
+    		{
+    			String[] valorCampo;
+    			String valoresArreglado = "";
+    			
+    			baseDatos = sentencias.get(0);
+    			tabla = sentencias.get(1);
+    			columnas = sentencias.get(2);
+    			
+    			valores = sentencias.get(contador);
+    			
+    			
+    			valorCampo = valores.split(",");
+    			
     			
     			for(int contador2 = 0; contador2 < valorCampo.length; contador2++)
     			{
@@ -293,10 +384,7 @@ public class GestionClientes {
     				
     			}
     			
-    			
-    			//System.out.println("insert into "+baseDatos+"."+tabla+" ("+columnas+") VALUES ("+valoresArreglado+")");
-    			
-    			DBManager.importarInsert(baseDatos, tabla, columnas, valoresArreglado);
+    			DBManager.importarUpdate(baseDatos, tabla, columnas, valoresArreglado);
     			
     		}
     		
@@ -305,6 +393,74 @@ public class GestionClientes {
     	{
     		ex.printStackTrace();
     	}
+    }
+    
+    
+    public static void opcionImportarBorrar()
+    {
+    	Scanner in = new Scanner(System.in);
+    	ArrayList<String> sentencias = new ArrayList<String>();
+    	String fichero, baseDatos, tabla, columnas, valores;
+    	
+    	int contador2 = 0;
+    	
+    	System.out.println("¿Cual es el fichero que quiere importar para borrar?");
+    	fichero = in.nextLine();
+    	
+    	File importacion = new File(fichero);
+    	
+    	try
+    	{
+    		Scanner lector = new Scanner(importacion);
+    		
+    		do
+    		{
+    			sentencias.add(lector.nextLine());
+    		}
+    		while(lector.hasNext());
+    		
+    		lector.close();
+    		
+			String[] valorCampo;
+			String valoresArreglado = "";
+			
+			baseDatos = sentencias.get(0);
+			tabla = sentencias.get(1);
+			columnas = sentencias.get(2);
+			
+			
+			valores = sentencias.get(3);
+			
+			
+			valorCampo = valores.split(",");
+			
+			
+			for(contador2 = 0; contador2 < valorCampo.length; contador2++)
+			{
+				System.out.println(contador2);
+				if(contador2 == valorCampo.length-1)
+				{
+					valoresArreglado += "'"+valorCampo[contador2]+"'";
+				}
+				else
+				{
+					valoresArreglado += "'"+valorCampo[contador2]+"',";
+				}
+				
+			}
+			
+			DBManager.importarDelete(baseDatos, tabla, columnas, valoresArreglado);
+			
+    	}
+    	catch(Exception ex)
+    	{
+    		ex.printStackTrace();
+    	}
+    }
+    
+    public static void verProc()
+    {
+    	System.out.println(DBManager.verProcesosAlmacenados());
     }
     
 }
