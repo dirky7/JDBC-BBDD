@@ -512,8 +512,6 @@ public class DBManager {
 		{
 			PreparedStatement insert = conn.prepareStatement(consulta);
 			
-			
-			
 			int rs = insert.executeUpdate();
 			
 			
@@ -522,6 +520,89 @@ public class DBManager {
 		{	
 			ex.printStackTrace();
 		}
+	}
+	
+	
+	
+	public static void importarUpdate(String nombreBaseDatos, String nombreTabla, String columnas, String valores)
+	{
+		String columnasSeparadas[] = columnas.split(",");
+		String valoresSeparados[] = valores.split(",");
+		
+		for(int contador = 1; contador < valoresSeparados.length; contador++)
+		{
+			consulta = "UPDATE "+nombreBaseDatos+"."+nombreTabla+" SET "+columnasSeparadas[contador]+" = "+valoresSeparados[contador]+" WHERE "+columnasSeparadas[0]+" = "+valoresSeparados[0];
+			System.out.println(consulta);
+			try
+			{
+				PreparedStatement insert = conn.prepareStatement(consulta);
+				
+				int rs = insert.executeUpdate();
+				
+				
+			}
+			catch(SQLException ex)
+			{	
+				ex.printStackTrace();
+			}
+		}
+		
+	}
+	
+	
+	public static void importarDelete(String nombreBaseDatos, String nombreTabla, String columna, String valores)
+	{
+		
+		String valoresSeparados[] = valores.split(",");
+		
+		for(int contador = 0; contador < valoresSeparados.length; contador++)
+		{
+			consulta = "DELETE FROM "+nombreBaseDatos+"."+nombreTabla+" WHERE "+columna+" = "+valoresSeparados[contador];
+
+			
+			try
+			{
+				PreparedStatement insert = conn.prepareStatement(consulta);
+				
+				int rs = insert.executeUpdate();
+				
+				
+			}
+			catch(SQLException ex)
+			{	
+				ex.printStackTrace();
+			}
+		}
+		
+	}
+	
+	public static String verProcesosAlmacenados()
+	{
+		
+		consulta = "SELECT name, param_list FROM mysql.proc WHERE Db = '"+DB_NAME+"' AND type = 'PROCEDURE'";
+		
+		String resultado = "Nombre \t\tParametros\n";
+		
+		try
+		{
+			PreparedStatement verProc = conn.prepareStatement(consulta);
+			
+			ResultSet rs = verProc.executeQuery();
+			
+			while(rs.next())
+			{
+				resultado += rs.getString("name")+" \t"+rs.getString("param_list")+"\n";
+			}
+			
+			return resultado;
+		}
+		
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 }
