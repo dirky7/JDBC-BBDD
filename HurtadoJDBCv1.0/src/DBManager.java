@@ -1,6 +1,7 @@
 
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -11,6 +12,9 @@ import java.util.*;
  *
  * @author Daniel Hurtado Perera
  */
+
+@SuppressWarnings({ "resource", "unused" })
+
 public class DBManager {
 
     // Conexión a la base de datos
@@ -75,7 +79,6 @@ public class DBManager {
             System.out.println("OK!");
             return true;
         } catch (SQLException ex) {
-            ex.printStackTrace();
             return false;
         }
     }
@@ -89,7 +92,7 @@ public class DBManager {
             System.out.println("OK!");
             return true;
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            System.out.println(ex+": Base de datos NO conectada");
             return false;
         }
     }
@@ -127,11 +130,10 @@ public class DBManager {
             ex.printStackTrace();
         }
     }
-
-    //////////////////////////////////////////////////
-    // MÉTODOS DE TABLA CLIENTES
-    //////////////////////////////////////////////////
     
+    /**
+     * Muestra todas las bases de datos en una lista
+     */
     public static void mostrarBasesDeDatos()
     {
     	consulta = "SHOW DATABASES";
@@ -151,10 +153,14 @@ public class DBManager {
     	}
     	catch(SQLException ex)
     	{
-    		ex.printStackTrace();
+    		System.out.println("\n"+ex+"\n\t  -->  Error al mostrar las bases de datos\n");
     	}
     }
     
+    
+    /**
+     * Imprime el nombre de las tablas de la base de datos seleccionada. Usado para mostrar el nombre de la tablas para elegir
+     */
     
     public static void printTablas()
     {
@@ -177,12 +183,17 @@ public class DBManager {
     	}
     	catch(SQLException ex)
     	{
-    		ex.printStackTrace();
+    		System.out.println("\n"+ex+"\n\t  -->  Error al mostrar las tablas de '"+DB_NAME+"'\n");
     	}
     	
     	
     }
     
+    /**
+     * Imprime el nombre de las columnas de un tabla pasada por parametros
+     * @param tabla El parametro tabla para que se muestren las columnas
+     * @return Devuelve el nombre de las tablas separadas por tabuladores
+     */
     
     public static String printContenidoTabla(String tabla)
     {
@@ -211,12 +222,17 @@ public class DBManager {
     	
     	catch(SQLException ex)
     	{
-    		ex.printStackTrace();
+    		System.out.println("\n"+ex+"\n\t  -->  Error al mostrar las columnas de la tabla '"+tabla+"'\n");
     	}
     	
 		return resultado;
     	
     }
+    
+    /**
+     * Imprime el contenido de la tabla pasada por parametro
+     * @param tabla Nombre de la tabla que se quiere ver
+     */
     
     public static void printTipoDatosTabla(String tabla)
     {
@@ -239,12 +255,17 @@ public class DBManager {
     	}
     	catch(SQLException ex)
     	{
-    		ex.printStackTrace();
+    		System.out.println("\n"+ex+"\n\t  -->  Error al mostrar las columnas de la tabla '"+tabla+"'\n");
     	}
     	
     	System.out.println();
     }
     
+    
+    /**
+     * Se obtiene el nombre de las columnas para imprimirlas en SELECTs por ejemplo. Usado para imprimir
+     * @param tabla Nombre de la tabla de la que se quieren consultar las columnas
+     */
     public static void obtenerTabla(String tabla)
     {
     	consulta = "show columns from " + tabla;
@@ -267,10 +288,16 @@ public class DBManager {
     	}
     	catch(SQLException ex)
     	{
-    		ex.printStackTrace();
+    		System.out.println("\n"+ex+"\n\t  -->  Error al mostrar las columnas\n");
     	}
     }
     
+    
+    /**
+     * Mitica consulta SELECT de SQL.
+     * @param tabla Nombre de la tabla a la que se quiere ver el SELECT
+     * @return Devuelve en un String formateado para ver los datos de forma mas legible
+     */
     public static String printSelect(String tabla)
     {
     	
@@ -302,7 +329,7 @@ public class DBManager {
     	}
     	catch(SQLException ex)
     	{
-    		ex.printStackTrace();
+    		System.out.println("\n"+ex+"\n\t  -->  Error al mostrar los datos de la tabla '"+tabla+"'\n");
     	}
     	
     	
@@ -310,6 +337,11 @@ public class DBManager {
     }
     
     
+    /**
+     * Metodo para crear tablas.
+     * @param nombreTabla Nombre de la tabla que se quiere crear
+     * @param columnas Cuantas columnas se quieren crear dentro de la tabla
+     */
 
 	public static void crearTabla(String nombreTabla, int columnas) {
 		consulta = "create table " + nombreTabla + "(ejemplo int)";
@@ -329,7 +361,7 @@ public class DBManager {
 				{
 					try
 					{
-						System.out.println("Nombre del campo "+contador);
+						System.out.println("Nombre del columna "+contador);
 						nombreColumna = ent.nextLine();
 						
 						System.out.println("1. String | 2. Int");
@@ -369,24 +401,35 @@ public class DBManager {
 							
 						}
 					}
+					
+					catch(InputMismatchException ex)
+					{
+						ent.nextLine();
+						System.out.println("\n"+ex+"\n\t  -->  Error al introducir columna\n");
+						contador -= 1;
+					}
+					
 					catch(Exception ex)
 					{
 						ent.nextLine();
-						ex.printStackTrace();
+						System.out.println("\n"+ex+"\n\t  -->  Error al introducir columna\n");
 						contador -= 1;
 					}
 				}
 			
-			
-			
-			
 		}
 		catch(SQLException ex)
 		{
-			ex.printStackTrace();
+			System.out.println("\n"+ex+"\n\t  -->  Error al introducir columna\n");
 		}
 		
 	}
+	
+	/**
+	 * Metodo para modificar el tipo de dato que tiene la columna de una tabla
+	 * @param nombreTabla Nombre de la tabla que se quiere modificar
+	 * @param nombreColumna Nombre de la columna a la que se quiere cambiar el tipo de dato
+	 */
 	
 	public static void modificarTabla(String nombreTabla, String nombreColumna)
 	{
@@ -424,14 +467,19 @@ public class DBManager {
 		}
 		catch(SQLException ex)
 		{
-			ex.printStackTrace();
+			System.out.println("\n"+ex+"\n\t  -->  Error al modificar la columna\n");
 		}
 		catch(Exception ex)
 		{
-			ex.printStackTrace();
+			System.out.println("\n"+ex+"\n\t  -->  Error al modificar la columna\n");
 		}
 	}
 
+	
+	/**
+	 * Metodo para borrar una tabla de la base de datos
+	 * @param nombreTabla Nombre de la tabla de la base de datos que se quiere borrar
+	 */
 	public static void borrarTabla(String nombreTabla)
 	{
 		consulta = "DROP TABLE "+nombreTabla;
@@ -444,10 +492,16 @@ public class DBManager {
 		}
 		catch(SQLException ex)
 		{
-			
+			System.out.println("\n"+ex+"\n\t  -->  Error al eliminar la tabla\n");
 		}
 	}
 	
+	
+	/**
+	 * Metodo para añadir una nueva columna a una tabla
+	 * @param nombreTabla Nombre de la tabla a la que se quiere añadir una columna
+	 * @param nombreColumna Nombre de la columna que se va a añadir
+	 */
 	public static void anadirColumna(String nombreTabla, String nombreColumna)
 	{
 		int opcionValor;
@@ -484,14 +538,20 @@ public class DBManager {
 		}
 		catch(SQLException ex)
 		{
-			ex.printStackTrace();
+			System.out.println("\n"+ex+"\n\t  -->  Error al añadir columna\n");
 		}
 		catch(Exception ex)
 		{
-			ex.printStackTrace();
+			System.out.println("\n"+ex+"\n\t  -->  Error al añadir columna\n");
 		}
 	}
 	
+	
+	/**
+	 * Metodo que imprime de forma bonita el nombre de la base de datos y de la tabla de un fichero
+	 * @param nombreTabla Nombre de la tabla
+	 * @return Devuelve un String con el nombre de la base de datos y la tabla
+	 */
 	
 	public static String cabeceraFichero(String nombreTabla)
 	{
@@ -503,6 +563,14 @@ public class DBManager {
 		return resultado;
 		
 	}
+	
+	/**
+	 * Metodo que inserta datos a una tabla de una base de datos que se ha pasado por un fichero
+	 * @param nombreBaseDatos Nombre de la base de datos a la que se quiere insertar la información.
+	 * @param nombreTabla Nombre de la tabla a la que se quiere insertar la informacion.
+	 * @param columnas El nombre de las columnas de la tabla
+	 * @param valores Es la informacion que se va a insertar a la tabla de la base de datos
+	 */
 	
 	public static void importarInsert(String nombreBaseDatos, String nombreTabla, String columnas, String valores)
 	{
@@ -518,11 +586,18 @@ public class DBManager {
 		}
 		catch(SQLException ex)
 		{	
-			ex.printStackTrace();
+			System.out.println("\n"+ex+"\n\t  -->  Error al insertar los datos a la base de datos '"+nombreBaseDatos+"'\n");
 		}
 	}
 	
 	
+	/**
+	 * Metodo que desde la importacion un archivo y actuliza los datos de una tabla de una base de datos
+	 * @param nombreBaseDatos Nombre de la base de datos
+	 * @param nombreTabla Nombre de la tabla a la que se van a modificar los datos
+	 * @param columnas Nombre de las columnas de los datos que se van a modificar
+	 * @param valores Informacion que se va a modificar
+	 */
 	
 	public static void importarUpdate(String nombreBaseDatos, String nombreTabla, String columnas, String valores)
 	{
@@ -543,12 +618,19 @@ public class DBManager {
 			}
 			catch(SQLException ex)
 			{	
-				ex.printStackTrace();
+				System.out.println("\n"+ex+"\n\t  -->  Error al actualizar los datos de la base de datos '"+nombreBaseDatos+"'\n");
 			}
 		}
 		
 	}
 	
+	/**
+	 * Metodo que desde la importacion un archivo, se borran registros de un tabla de una base de datos
+	 * @param nombreBaseDatos
+	 * @param nombreTabla
+	 * @param columna
+	 * @param valores
+	 */
 	
 	public static void importarDelete(String nombreBaseDatos, String nombreTabla, String columna, String valores)
 	{
@@ -570,11 +652,17 @@ public class DBManager {
 			}
 			catch(SQLException ex)
 			{	
-				ex.printStackTrace();
+				System.out.println("\n"+ex+"\n\t  -->  Error al borrar registros de la base de datos '"+nombreBaseDatos+"'\n");
 			}
 		}
 		
 	}
+	
+	
+	/**
+	 * Metodo que lista los Procedimientos almacenados que tenga una base de datos
+	 * @return Devuelve los nombres de los procedimientos almacenados y los tipos de datos necesitan para ejecutarse
+	 */
 	
 	public static String verProcesosAlmacenados()
 	{
@@ -599,10 +687,221 @@ public class DBManager {
 		
 		catch(SQLException ex)
 		{
-			ex.printStackTrace();
+			System.out.println("\n"+ex+"\n\t  -->  Error al mostrar los procedimientos almacenados\n");
 		}
 		
 		return null;
+	}
+	
+	
+	/**
+	 * Metodo que comprueba si el procedimiento almacenado pasado por parametro, tiene parametros o no
+	 * @param nombreProcedimiento Nombre del procedimiento que se va a comprobar
+	 * @return Devuelve un booleano 'true' si el procedimiento no necesita parametros, booleano 'false' si el procedimiento necesita argumentos
+	 */
+	
+	public static boolean comprobarProcedimiento(String nombreProcedimiento)
+	{
+		consulta = "SELECT name, param_list FROM mysql.proc WHERE Db = '"+DB_NAME+"' AND name = '"+nombreProcedimiento+"'";
+		
+		String resultado = "";
+		
+		try
+		{
+			PreparedStatement verProc = conn.prepareStatement(consulta);
+			
+			ResultSet rs = verProc.executeQuery();
+			
+			while(rs.next())
+			{
+				resultado += rs.getString("param_list");
+			}
+		}
+		
+		catch(SQLException ex)
+		{
+			System.out.println("\n"+ex+"\n\t  -->  Error al comprobar el procedimiento almacenado\n");
+		}
+		
+		if(resultado == "")
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	
+	/**
+	 * Devuelve el resultado del procedimiento almacenado pasado por parametro en forma de lista
+	 * @param nombreProcedimiento Nombre del procedimiento almacenado que se quiere consultar
+	 * @return Devuelve el resultado del procedimiento almacenado en un String formateado.
+	 */
+	
+	public static String procedimiento(String nombreProcedimiento)
+	{
+		if(comprobarProcedimiento(nombreProcedimiento) == true)
+		{
+			try
+			{
+				consulta = "{CALL "+nombreProcedimiento+"}";
+				
+				CallableStatement proc2 = conn.prepareCall(consulta);
+				
+				ResultSet rs2 = proc2.executeQuery();
+				
+				int limite = columnasProc(rs2);
+				
+				rs2.close();
+				
+				
+				CallableStatement call = conn.prepareCall(consulta);
+				
+				ResultSet rs = call.executeQuery();
+				
+				String resultadoFinal = "";
+				
+				while(rs.next())
+				{
+					int contador = 1;
+					
+					while(contador <= limite)
+					{
+						String tupla = (rs.getString(contador));
+						resultadoFinal += tupla+"\t";
+						
+						contador++;
+					}
+					
+					contador = 1;
+					
+					resultadoFinal += "\n";
+				}
+				rs.close();
+				
+				return resultadoFinal;
+				
+				
+			}
+			catch(SQLException ex)
+			{
+				System.out.println("\n"+ex+"\n\t  -->  Error al ejecutar el procedimiento almacenado(Sin parametros)\n");
+			}
+		}
+		
+		else
+		{
+			try
+			{
+				Scanner ent = new Scanner (System.in);
+				
+				consulta = "SELECT name, param_list FROM mysql.proc WHERE Db = '"+DB_NAME+"' AND name = '"+nombreProcedimiento+"'";
+				
+				PreparedStatement miSentencia = conn.prepareStatement(consulta);
+				
+				ResultSet miResultado = miSentencia.executeQuery();
+
+				String procedimientos = "";
+				
+				String consultaCall = "{CALL "+nombreProcedimiento+"(";
+				
+				while(miResultado.next())
+				{
+					procedimientos = miResultado.getString("param_list");
+				}
+				
+				miResultado.close();
+				
+				String[] separarProc = procedimientos.split(", ");
+				for(int contador = 0; contador < separarProc.length; contador ++)
+				{
+					System.out.println("Introduzca un dato llamado: "+separarProc[contador]);
+					
+					String pedir = ent.nextLine();
+					
+					if(contador == separarProc.length-1)
+					{
+						consultaCall += "'"+pedir+"')";
+					}
+					else
+					{
+						consultaCall += "'"+pedir+"',"; 
+					}
+				}
+				
+				
+				consulta = consultaCall+"}";
+				
+				CallableStatement proc = conn.prepareCall(consulta);
+				
+				CallableStatement proc2 = conn.prepareCall(consulta);
+				
+				ResultSet rs2 = proc2.executeQuery();
+				
+				int limite = columnasProc(rs2);
+				
+				rs2.close();
+				
+				ResultSet rs = proc.executeQuery();
+				
+				
+				String resultadoFinal = "";
+				
+				
+				while(rs.next())
+				{
+					int contador = 1;
+					
+					while(contador <= limite)
+					{
+						String tupla = (rs.getString(contador));
+						resultadoFinal += tupla+"\t";
+						
+						contador++;
+					}
+					
+					
+					resultadoFinal += "\n";
+				}
+				rs.close();
+				
+				return resultadoFinal;
+				
+			}
+			
+			catch(SQLException ex)
+			{
+				System.out.println("\n"+ex+"\n\t  -->  Error al ejecutar el procedimiento almacenado(con parametros)\n");
+			}
+		}
+		
+		return null;
+	}
+	
+	
+	/**
+	 * Metodo para saber cuantas columnas devuelve el procedimiento almacenado
+	 * @param rs ResultSet del procedimiento almacenado del que se quiere saber cuantas columnas tiene
+	 * @return Devuelve el numero de columnas que tiene.
+	 */
+	
+	public static int columnasProc(ResultSet rs)
+	{
+		int contador = 0;
+		try
+		{
+			
+			contador = rs.getMetaData().getColumnCount();
+			
+		}
+		catch (SQLException ex)
+		{
+			System.out.println("\n"+ex+"\n\t  -->  Error al contar las columnas del procedimiento almacenado\n");
+		}
+		
+		return contador;
 	}
 	
 }
