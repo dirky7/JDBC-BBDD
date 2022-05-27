@@ -1,0 +1,4 @@
+empresa
+departamentos
+idDepart,nomDepart,tipoDirec,presu,idCen
+10,Finanzas,f,5000,4
