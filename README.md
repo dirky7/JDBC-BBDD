@@ -11,6 +11,8 @@ AVISO PARA USO DEL PROGRAMA:
 
 Se tiene que que modificar manualmente la dirección IP dentro del proyecto para que se pueda conectar a un servidor.
 
+Todos los metodos han sido escritos por el mismo autor, por lo que se puede mejorar y optimizar el codigo si se echa en mano la documentación de las clases de JDBC.
+
 
 AVISO IMPORTANTE PARA IMPORTAR FICHEROS:
 
